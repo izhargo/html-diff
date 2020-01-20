@@ -10,8 +10,9 @@ DEST_URL = 'https://asrJ.com'
 
 
 def garceful_exit(retry_state):
-    pass
-
+    error = retry_state.outcome.exception().__class__.__name__
+    logger.error('Encountered an error: %s, failed after %s retries', error, retry_state.attempt_number)
+    sys.exit(1)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(), retry_error_callback=garceful_exit)
@@ -20,7 +21,7 @@ def get_html():
     if response.text:
         return response.text
     else:
-        logger.warning('Unable to get any HTML form from destination URL')
+        logger.error('Unable to get any HTML form from destination URL')
         sys.exit(1)
 
 
