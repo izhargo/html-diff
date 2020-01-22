@@ -1,9 +1,19 @@
 import boto3
 
+BUCKET_NAME = 'latest-html-form-apple'
+
+s3 = boto3.client('s3')
+
+
+def init_storage():
+    return s3.list_objects_v2(Bucket=BUCKET_NAME).get('KeyCount')
+
+
 
 def check_latest_html_form(html_dict):
-    result_code = init_storage(html_dict)
-    STORAGE_FUNC[result_code](html_dict)
+    result_code = init_storage()
+    if result_code:
+        STORAGE_FUNC[result_code](html_dict)
 
 
 def save_key_value(html_dict):
