@@ -38,8 +38,8 @@ def get_md5(html_form):
 def create_html_dict(response, md5_sum):
     timestamp = datetime.now()
     signature = f'{timestamp.year}_{timestamp.month}_{timestamp.day}_{timestamp.hour}_{timestamp.minute}_' \
-                f'{timestamp.second}_{md5_sum}'
-    result = {'md5': md5_sum, 'html_form': response.content, 'signature': signature}
+                f'{timestamp.second}_{md5_sum}.txt'
+    result = {'md5': md5_sum, 'html_form_binary': response.content, 'signature': signature}
     return result
 
 

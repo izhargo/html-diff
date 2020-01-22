@@ -16,6 +16,12 @@ def check_latest_html_form(html_dict):
 
 
 def save_key_value(html_dict):
+    storage_response = s3_client.put_object(Body=html_dict['html_form_binary'], Bucket=BUCKET_NAME,
+                                            Key=html_dict['signature'])
+    if storage_response == 200:
+        return True
+    else:
+        return False
 
 
 def compare_html_forms(html_dict):
@@ -24,6 +30,7 @@ def compare_html_forms(html_dict):
 
 def too_many_forms(html_dict):
     pass
+
 
 client.put_object(Body=some_binary_data, Bucket='latest-html-form-apple', Key='test_some.txt')
 
