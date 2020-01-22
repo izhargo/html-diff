@@ -7,7 +7,6 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 logger = logging.getLogger(__name__)
 
 DEST_URL = 'https://support.apple.com/en-us/HT201222'
-# DEST_URL = 'https://asrJ.com'
 
 
 def garceful_exit(retry_state):
@@ -17,10 +16,10 @@ def garceful_exit(retry_state):
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(), retry_error_callback=garceful_exit)
-def get_html():
-    response = requests.get(DEST_URL, timeout=4)
-    if response.content:
-        return response.content
+def get_html(dest_url):
+    response = requests.get(dest_url, timeout=4)
+    if response and response.content:
+        return response
     else:
         logger.error('Unable to get any HTML form from destination URL')
         sys.exit(1)
@@ -34,9 +33,10 @@ def get_md5(html_form):
 
 
 def main():
-    html_form = get_html()
-    md5_sum = get_md5(html_form)
+    apple_response = get_html(DEST_URL)
+    md5_sum = get_md5(apple_response.content)
     print(md5_sum)
+
 
 
 if __name__ == '__main__':
