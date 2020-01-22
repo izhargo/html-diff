@@ -13,7 +13,8 @@ DEST_URL = 'https://support.apple.com/en-us/HT201222'
 
 def garceful_exit(retry_state):
     error = retry_state.outcome.exception().__class__.__name__
-    logger.error('Encountered an error: %s, failed after %s retries', error, retry_state.attempt_number)
+    logger.error('Encountered an error when getting html_form: %s, failed after %s retries',
+                 error, retry_state.attempt_number)
     sys.exit(1)
 
 
@@ -38,7 +39,7 @@ def create_html_dict(response, md5_sum):
     timestamp = datetime.now()
     signature = f'{timestamp.year}_{timestamp.month}_{timestamp.day}_{timestamp.hour}_{timestamp.minute}_' \
                 f'{timestamp.second}_{md5_sum}'
-    result = {'md5': md5_sum, 'html_form': response.text, 'signature': signature}
+    result = {'md5': md5_sum, 'html_form': response.content, 'signature': signature}
     return result
 
 

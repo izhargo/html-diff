@@ -2,12 +2,11 @@ import boto3
 
 BUCKET_NAME = 'latest-html-form-apple'
 
-s3 = boto3.client('s3')
+s3_client = boto3.client('s3')
 
 
 def init_storage():
-    return s3.list_objects_v2(Bucket=BUCKET_NAME).get('KeyCount')
-
+    return s3_client.list_objects_v2(Bucket=BUCKET_NAME).get('KeyCount')
 
 
 def check_latest_html_form(html_dict):
@@ -17,7 +16,6 @@ def check_latest_html_form(html_dict):
 
 
 def save_key_value(html_dict):
-    pass
 
 
 def compare_html_forms(html_dict):
@@ -27,6 +25,9 @@ def compare_html_forms(html_dict):
 def too_many_forms(html_dict):
     pass
 
+client.put_object(Body=some_binary_data, Bucket='latest-html-form-apple', Key='test_some.txt')
+
+storage_response.get('ResponseMetadata').get('HTTPStatusCode')
 
 STORAGE_FUNC = {
     0: save_key_value,
