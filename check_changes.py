@@ -2,6 +2,7 @@ import requests
 import logging
 import sys
 import hashlib
+from storage import check_latest_html_form
 from datetime import datetime
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -45,7 +46,7 @@ def main():
     apple_response = get_html(DEST_URL)
     md5_sum = get_md5(apple_response.content)
     html_dict = create_html_dict(apple_response, md5_sum)
-    print(md5_sum)
+    check_latest_html_form(html_dict)
 
 
 if __name__ == '__main__':
