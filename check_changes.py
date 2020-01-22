@@ -2,6 +2,7 @@ import requests
 import logging
 import sys
 import hashlib
+from datetime import datetime
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
@@ -32,11 +33,19 @@ def get_md5(html_form):
     return md5_sum
 
 
+def create_html_dict(response, md5_sum):
+    timestamp = datetime.now()
+    signature = f'{timestamp.year}_{timestamp.month}_{timestamp.day}_{timestamp.hour}_{timestamp.minute}_' \
+                f'{timestamp.second}_{md5_sum}'
+    result = {'md5': md5_sum, 'html_form': response.text, 'signature': signature}
+    return result
+
+
 def main():
     apple_response = get_html(DEST_URL)
     md5_sum = get_md5(apple_response.content)
+    html_dict = create_html_dict(apple_response, md5_sum)
     print(md5_sum)
-
 
 
 if __name__ == '__main__':
