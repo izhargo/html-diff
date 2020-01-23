@@ -4,15 +4,15 @@ BUCKET_NAME = 'latest-html-form-apple'
 
 s3_client = boto3.client('s3')
 
-
+# client.list_objects_v2(Bucket='latest-html-form-apple').get('Content')
 def init_storage():
-    return s3_client.list_objects_v2(Bucket=BUCKET_NAME).get('KeyCount')
+    return s3_client.list_objects_v2(Bucket=BUCKET_NAME)['KeyCount']
 
 
 def check_latest_html_form(html_dict):
-    result_code = init_storage()
-    if result_code:
-        STORAGE_FUNC[result_code](html_dict)
+    storage_init_code = init_storage()
+    if storage_init_code:
+        storage_success = STORAGE_FUNC[storage_init_code](html_dict)
 
 
 def save_key_value(html_dict):
@@ -25,8 +25,9 @@ def save_key_value(html_dict):
 
 
 def compare_html_forms(html_dict):
-    pass
-
+    obj = s3_client.list_objects_v2(Bucket=BUCKET_NAME)
+    current_key = obj['Contents'][0]['Key']
+    data = client.get_object(Bucket='latest-html-form-apple', Key='test.txt')
 
 def too_many_forms(html_dict):
     pass
