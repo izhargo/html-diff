@@ -25,12 +25,15 @@ def save_key_value(html_dict):
 
 
 def compare_html_forms(html_dict):
+    result = True
     obj = s3_client.list_objects_v2(Bucket=BUCKET_NAME)
     current_key = obj['Contents'][0]['Key']
-    data = client.get_object(Bucket='latest-html-form-apple', Key='test.txt')
-
-def too_many_forms(html_dict):
-    pass
+    data = client.get_object(Bucket='latest-html-form-apple', Key=current_key)
+    binary_content = data['Body'].read()
+    if html_dict['html_form_binary'] != binary_content:
+        delete_current_key(current_key)
+        result = save_key_value(html_dict)
+    return result
 
 
 client.put_object(Body=some_binary_data, Bucket='latest-html-form-apple', Key='test_some.txt')
@@ -39,6 +42,5 @@ storage_response.get('ResponseMetadata').get('HTTPStatusCode')
 
 STORAGE_FUNC = {
     0: save_key_value,
-    1: compare_html_forms,
-    2: too_many_forms
+    1: compare_html_forms
 }
