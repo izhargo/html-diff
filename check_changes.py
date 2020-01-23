@@ -20,8 +20,10 @@ def garceful_exit(retry_state):
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(), retry_error_callback=garceful_exit)
 def get_html(dest_url):
+    logger.info('Getting an html form from destination url')
     response = requests.get(dest_url, timeout=4)
     if response and response.content:
+        logger.info('Received an html form from destination url')
         return response
     else:
         logger.error('Unable to get any HTML form from destination URL')
@@ -48,7 +50,7 @@ def main():
     md5_sum = get_md5(apple_response.content)
     html_dict = create_html_dict(apple_response, md5_sum)
     check_latest_html_form(html_dict)
-
+    logger.info('Finished checking website. Latest html form is in storage')
 
 if __name__ == '__main__':
     main()
