@@ -5,6 +5,10 @@ BUCKET_NAME = 'latest-html-form-apple'
 s3_client = boto3.client('s3')
 
 
+class StorageError(Exception):
+    pass
+
+
 def check_response(response):
     if 200 <= response < 300:
         return True
@@ -20,7 +24,8 @@ def check_latest_html_form(html_dict):
     storage_init_code = init_storage()
     if storage_init_code:
         storage_success = STORAGE_FUNC[storage_init_code](html_dict)
-
+    if not storage_init_code:
+        raise StorageError
 
 def save_key_value(html_dict):
     storage_response = s3_client.put_object(Body=html_dict['html_form_binary'], Bucket=BUCKET_NAME,
@@ -39,7 +44,7 @@ def compare_html_forms(html_dict):
     result = True
     obj = s3_client.list_objects_v2(Bucket=BUCKET_NAME)
     current_key = obj['Contents'][0]['Key']
-    data = client.get_object(Bucket=BUCKET_NAME, Key=current_key)
+    data = s3_client.get_object(Bucket=BUCKET_NAME, Key=current_key)
     binary_content = data['Body'].read()
     if html_dict['html_form_binary'] != binary_content:
         deletion_success = delete_current_key(current_key)
