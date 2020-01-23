@@ -54,6 +54,9 @@ def compare_html_forms(html_dict):
         delete_current_key(current_key)
         logger.info('Deletion of previous html form completed. New form is saved')
         save_key_value(html_dict)
+    else:
+        logger.info('No changes in html form')
+        return
 
 
 STORAGE_FUNC = {
