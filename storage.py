@@ -12,11 +12,11 @@ class StorageError(Exception):
     pass
 
 
-def check_response(response):
-    if 200 <= response < 300:
-        return True
+def check_response(status_code):
+    if 200 <= status_code < 300:
+        return
     else:
-        return False
+        raise StorageError('Unable to preform storage action')
 
 
 def get_key_count():
@@ -26,26 +26,24 @@ def get_key_count():
 def check_latest_html_form(html_dict):
     initial_num_count = get_key_count()
     if initial_num_count:
-        storage_success = STORAGE_FUNC[initial_num_count](html_dict)
-    if not storage_success:
-        raise StorageError('Unable to preform storage action')
+        STORAGE_FUNC[initial_num_count](html_dict)
+
 
 def save_key_value(html_dict):
     storage_response = s3_client.put_object(Body=html_dict['html_form_binary'], Bucket=BUCKET_NAME,
                                             Key=html_dict['signature'])
-    response = storage_response['ResponseMetadata']['HTTPStatusCode']
-    return check_response(response)
+    status_code = storage_response['ResponseMetadata']['HTTPStatusCode']
+    check_response(status_code)
 
 
 def delete_current_key(key):
     storage_response = s3_client.delete_object(Bucket=BUCKET_NAME, Key=key)
-    response = storage_response['ResponseMetadata']['HTTPStatusCode']
-    return check_response(response)
+    status_code = storage_response['ResponseMetadata']['HTTPStatusCode']
+    check_response(status_code)
 
 
 def compare_html_forms(html_dict):
     logger.info('Start comparing existing html form to new form')
-    result = True
     obj = s3_client.list_objects_v2(Bucket=BUCKET_NAME)
     current_key = obj['Contents'][0]['Key']
     logger.info('Getting existing html from storage')
@@ -53,13 +51,9 @@ def compare_html_forms(html_dict):
     binary_content = data['Body'].read()
     if html_dict['html_form_binary'] != binary_content:
         logger.info('Found a new html form. Updating storage')
-        deletion_success = delete_current_key(current_key)
-        if deletion_success:
-            logger.info('Deletion of previous html form completed. New form is saved')
-            result = save_key_value(html_dict)
-        else:
-            result = False
-    return result
+        delete_current_key(current_key)
+        logger.info('Deletion of previous html form completed. New form is saved')
+        save_key_value(html_dict)
 
 
 STORAGE_FUNC = {
