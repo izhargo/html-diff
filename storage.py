@@ -1,12 +1,18 @@
+import sys
 import logging
 import boto3
 
-BUCKET_NAME = 'latest-html-form-apple'
+BUCKET_NAME = 'support-apple-com-en-us'
 
 s3_client = boto3.client('s3')
 
 logger = logging.getLogger(__name__)
-
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 class StorageError(Exception):
     pass

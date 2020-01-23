@@ -7,6 +7,12 @@ from datetime import datetime
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 DEST_URL = 'https://support.apple.com/en-us/HT201222'
 
@@ -51,6 +57,7 @@ def main():
     html_dict = create_html_dict(apple_response, md5_sum)
     check_latest_html_form(html_dict)
     logger.info('Finished checking website. Latest html form is in storage')
+
 
 if __name__ == '__main__':
     main()
