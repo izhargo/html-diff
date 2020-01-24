@@ -14,6 +14,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+
 class StorageError(Exception):
     pass
 
@@ -30,9 +31,9 @@ def get_key_count():
 
 
 def check_latest_html_form(html_dict):
+    logger.info('Start Handling storage procedure')
     initial_num_count = get_key_count()
-    if initial_num_count:
-        STORAGE_FUNC[initial_num_count](html_dict)
+    STORAGE_FUNC[initial_num_count](html_dict)
 
 
 def save_key_value(html_dict):
@@ -40,6 +41,7 @@ def save_key_value(html_dict):
                                             Key=html_dict['signature'])
     status_code = storage_response['ResponseMetadata']['HTTPStatusCode']
     check_response(status_code)
+    logger.info('Newly found html form was saved in storage')
 
 
 def delete_current_key(key):
@@ -49,7 +51,7 @@ def delete_current_key(key):
 
 
 def compare_html_forms(html_dict):
-    logger.info('Start comparing existing html form to new form')
+    logger.info('Comparing existing html form to new form')
     obj = s3_client.list_objects_v2(Bucket=BUCKET_NAME)
     current_key = obj['Contents'][0]['Key']
     logger.info('Getting existing html from storage')
